@@ -1,0 +1,12 @@
+Name:                wordjunk
+Version:             0.0
+Description:         Generate memorable, but random, passwords.
+License:             GPL
+License-file:        COPYING
+Author:              Alan Falloon
+Maintainer:          alan.falloon@gmail.com
+Build-Type:          Simple
+Cabal-Version:       >=1.2
+Executable wordjunk
+  Main-is:           Main.hs
+  Build-Depends:     base, array, random, mtl
