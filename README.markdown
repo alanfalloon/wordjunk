@@ -10,7 +10,7 @@ Usage
 
 Example Output
 --------------
-gERm#!3an
-j0B1Megs
-0%!co1D
-f|@N@EW3
+    gERm#!3an
+    j0B1Megs
+    0%!co1D
+    f|@N@EW3
