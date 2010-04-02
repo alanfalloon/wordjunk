@@ -1,4 +1,3 @@
-
 module ERandom where
 
 import Control.Monad.State

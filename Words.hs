@@ -24,7 +24,7 @@ loadWords = do
             where
               shortEnough = inRange lenRange (length w)
               noCaps      = all isLower w
-              
+
 
 wordJoiners :: Array Int String
 wordJoiners = listToArray [ "1" ,
