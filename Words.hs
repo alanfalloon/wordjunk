@@ -11,14 +11,15 @@ import System.IO
 -- | Load the words from the system dictionary, and only keep the ones
 -- | within the specified word range, and which consist of only
 -- | lowercase letters.
-loadWords :: (Int,Int) -> IO (Array Int String)
-loadWords lenRange = do
+loadWords :: IO (Array Int String)
+loadWords = do
   contents <- readFile "/usr/share/dict/words"
   let allWords = words contents
       goodWords = filter goodWord allWords
       gwArray = listToArray goodWords
   return gwArray
       where
+        lenRange = (3,10)
         goodWord w = shortEnough && noCaps
             where
               shortEnough = inRange lenRange (length w)
@@ -32,7 +33,14 @@ wordJoiners = listToArray [ "1" ,
                             "8" ,
                             "-" ,
                             "_" ,
+                            " " ,
                             "!" ,
+                            "?" ,
+                            "+" ,
+                            "~" ,
+                            "^" ,
+                            "&" ,
+                            "=" ,
                             "#" ,
                             "*" ,
                             "|" ,
@@ -50,7 +58,7 @@ l33tLetters = listArray (minBound, maxBound) [ choicesForChar c | c <- allChars 
 
       alts :: Array Char String
       alts = accumArray (++) [] ('a', 'z') [ ('o', "0"   ) ,
-                                             ('l', "17!|") ,
+                                             ('l', "7") ,
                                              ('i', "1!|" ) ,
                                              ('z', "2"   ) ,
                                              ('e', "3"   ) ,

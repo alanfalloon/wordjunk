@@ -7,7 +7,7 @@ import Words
 
 main :: IO ()
 main = do
-  ws <- loadWords (2,5)
+  ws <- loadWords
   junk <- runERandomIO (makeJunk 128 ws)
   putStrLn junk
 
