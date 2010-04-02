@@ -15,6 +15,7 @@ options =
     [ Option ['V'] ["version"] (NoArg showVersion) "show the current version and exit."
     , Option ['h'] ["help"]    (NoArg showHelp)    "Show this help and exit."
     , Option ['e'] ["entropy"] (ReqArg setEntropy "BITS") entropyHelp
+    , Option ['n'] ["count"]   (ReqArg setCount "N") "How many words to generate."
     ]
     where
       entropyHelp = "The minimum amount of entropy in the generated" ++
@@ -24,6 +25,7 @@ options =
                     " anyone"
 
 data Options = Options {
+      count :: Int,
       entropy :: Entropy
     }
 
@@ -36,8 +38,9 @@ main = do
             (_, _ , m ) -> error $ concat m ++ usageInfo header options
   opts <- foldl (>>=) (return defaultOptions) flags
   ws <- loadWords
-  junk <- runERandomIO (makeJunk (entropy opts) ws)
-  putStrLn junk
+  sequence_ $ replicate (count opts) $ do
+         junk <- runERandomIO (makeJunk (entropy opts) ws)
+         putStrLn junk
 
 makeJunk :: (Random i, Ix i, RandomGen g) =>
             Double -> Array i String -> ERandomM g String
@@ -92,10 +95,21 @@ showHelp _ = do
 
 setEntropy :: String -> Options -> IO Options
 setEntropy entStr opt = do
-  case reads entStr of
-    [(ent,"")] -> return (opt { entropy = ent })
-    _          -> error $ "entropy must be a number, not " ++ entStr
+  ent <- convertArg "entropy" "number" entStr
+  return (opt { entropy = ent })
+
+setCount :: String -> Options -> IO Options
+setCount countStr opt = do
+  c <- convertArg "count" "integer" countStr
+  return (opt { count = c })
+
+convertArg :: Read a => String -> String -> String -> IO a
+convertArg name vtype val = do
+  case reads val of
+    [(x,"")] -> return x
+    _        -> error $ name ++ " must be a " ++ vtype ++ ", not \"" ++ val ++ "\""
 
 defaultOptions = Options {
+                   count = 1,
                    entropy = 128
                  }
