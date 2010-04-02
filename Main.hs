@@ -7,11 +7,12 @@ import Words
 
 main :: IO ()
 main = do
-  ws <- loadWords 5
+  ws <- loadWords (2,5)
   junk <- runERandomIO (makeJunk 128 ws)
   putStrLn junk
 
-makeJunk :: RandomGen g => Double -> [String] -> ERandomM g String
+makeJunk :: (Random i, Ix i, RandomGen g) =>
+            Double -> Array i String -> ERandomM g String
 makeJunk bits words | bits <= 0 = return []
                     | otherwise = do
   w <- makeWord

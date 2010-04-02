@@ -2,6 +2,7 @@
 module ERandom where
 
 import Control.Monad.State
+import Data.Array.IArray
 import System.Random
 
 type Entropy = Double
@@ -33,23 +34,16 @@ bitsLinear :: Integral a => a -> Entropy
 bitsLinear n = logBase 2 (fromIntegral n)
 
 -- | Get a random number in a range
-eRandomRM :: (Integral a, Random a, RandomGen g) => (a,a) -> ERandomM g a
+eRandomRM :: (Ix a, Random a, RandomGen g) => (a,a) -> ERandomM g a
 eRandomRM (lo,hi) = do
   ER e g <- get
   let (r,g') = randomR (lo,hi) g
-      e'     = bitsLinear (abs (hi-lo))
+      e'     = bitsLinear (rangeSize (lo,hi))
   put (ER (e+e') g')
   return r
 
--- | Choose any element from the list with equal probibility
-eRandomEltM :: RandomGen g => [a] -> ERandomM g a
-eRandomEltM []         = fail "can't choose from empty list"
-eRandomEltM (elt:elts) = eRandomEltM' 1 elt elts
-    where
-      eRandomEltM' _ e []        = return e
-      eRandomEltM' n e (e':elts) = do
-        x <- eRandomRM (1,n')
-        if x == 1 then eRandomEltM' n' e' elts else eRandomEltM' n' e elts
-          where
-            n' :: Int
-            n' = n + 1
+-- | Choose any element from the array with equal probibility
+eRandomEltM :: (IArray a e, Ix i, Random i, RandomGen g) => a i e -> ERandomM g e
+eRandomEltM arr = do
+  i <- eRandomRM (bounds arr)
+  return (arr ! i)
